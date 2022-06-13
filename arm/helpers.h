@@ -9,4 +9,12 @@ typedef enum servo_index
     servo_count
 } servo_index;
 
+typedef enum state
+{
+    learn,
+    play,
+    reset,
+    save_position
+} state;
+
 #endif

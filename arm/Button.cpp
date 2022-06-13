@@ -4,11 +4,13 @@
 Button::Button()
 {
     pinMode(PIN_BUTTON, INPUT_PULLUP);
+    update_interval = 50,
     _double_click_interval = 500,
     _hold_interval = 2000,
     _t_0 = 0,
     _t_1 = 0;
 }
+
 bool Button::is_pressed()
 {
     if (digitalRead(PIN_BUTTON) == LOW)
@@ -16,6 +18,7 @@ bool Button::is_pressed()
     else
         return false;
 }
+
 bool Button::_check_double_click()
 {
     _t_0 = millis();
@@ -24,6 +27,7 @@ bool Button::_check_double_click()
     { // esperando segundo clique
         if (Button::is_pressed())
         {                // houve segundo clique
+            delay(500);
             return true; // houve 2 cliques
         }
         _t_1 = millis();
@@ -47,25 +51,23 @@ bool Button::_check_hold()
     }
     return true;
 }
-int Button::button_state(bool released)
+
+int Button::update()
 {
-    if (Button::is_pressed())
-    {
-        if (released)
+    if (Button::is_pressed()){
+        if (Button::_check_hold())
         {
-            if (Button::_check_hold())
-            {
-                return hold;
-            }
-            else if (Button::_check_double_click())
-                return double_click;
-            else
-                return single_click;
+            return reset;
         }
-        else
-            return pressed;
+        else if (Button::_check_double_click()){
+            return play;
+        }
+        else{
+            return save_position;
+        }
     }
-    else
-        // Serial.println(released);
-        return not_pressed;
+    else{
+        // Serial.println(_released);
+        return learn;
+    }
 }
